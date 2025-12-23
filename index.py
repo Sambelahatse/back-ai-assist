@@ -250,6 +250,6 @@ def home():
 
 if __name__ == '__main__':
     # On écoute sur toutes les interfaces (0.0.0.0) sur le port 5000
-    print("🚀 Serveur Flask démarré sur http://localhost:5000")
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    print("🚀 Serveur Flask démarré sur http://localhost:80")
+    app.run(host='0.0.0.0', port=80, debug=True)
 
