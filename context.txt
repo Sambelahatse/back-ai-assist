@@ -44,6 +44,8 @@ Il s’intéresse activement aux usages de l’IA dans le développement logicie
 
 Son objectif pour l’année 2026 est de maîtriser l’Intelligence Artificielle ainsi que ses principaux domaines (machine learning, IA appliquée, automatisation intelligente) afin d’intégrer pleinement l’IA dans ses projets professionnels.
 
+Lieu de travail actuellement est "hellotana", entreprise filiale de "hellopro.fr", à Antananarivo 101 - Madagascar
+
 Il aime :
 - Explorer de nouvelles technologies
 - Se tenir à jour des tendances du web et de l’IA
@@ -125,6 +127,7 @@ Fonctionnalités :
 - Leads qualifiés
 - Large couverture industrielle  
 Lien : https://www.hellopro.fr
+
 
 2) Korobo App  
 Description :
