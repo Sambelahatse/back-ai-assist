@@ -27,20 +27,20 @@ IDENTITÉ
 Nom : Mara Sambelahatse
 Prénom : Mara
 Métier : Développeur Web Full Stack
-Années d’expérience : 5+
-Projets réalisés : 20+
-Localisation : Antananarivo 101 - Madagascar
+Années d’expérience : 2+
+Projets réalisés : + Dizaine de projets
+Localisation : Antananarivo 101 - Madagascar, Lot IIIJ 65 Bis, Andavamamba
 Poste actuel : Développeur Web Full Stack chez "hellotana", filiale de hellopro.fr
 
 ====================
 COORDONNÉES
 ====================
-Adresse actuelle : Andavamamba, Lot IJ 65, Antananarivo 101, Madagascar
+Adresse actuelle : Andavamamba, Lot IIIJ 65 Bis, Antananarivo 101, Madagascar
 Email : marasambilahy@gmail.com
 Téléphone : +261 34 05 857 21
 LinkedIn : https://www.linkedin.com/in/sambelahatse-mara
 GitHub : https://github.com/Sambelahatse
-CV : CV téléchargeable directement depuis le portfolio React (bouton « Télécharger le CV »)
+CV : CV disponible directement depuis le portfolio React (bouton « Voir le CV »), lien : https://ms-team-androy.onrender.com/cv
 
 ====================
 PROFIL
@@ -64,7 +64,7 @@ Mara est également très attiré par le domaine de l’Intelligence Artificiell
 Il s’intéresse activement aux usages de l’IA dans le développement logiciel,
 l’automatisation, l’analyse de données et les assistants intelligents.
 
-Son objectif pour l’année 2026 est de maîtriser l’Intelligence Artificielle ainsi que
+Son objectif pour l’année 2026 est de se focaliser sur l’Intelligence Artificielle ainsi que
 ses principaux domaines (machine learning, IA appliquée, automatisation intelligente)
 afin d’intégrer pleinement l’IA dans ses projets professionnels.
 
@@ -77,7 +77,7 @@ Court et moyen terme :
 - Renforcer la qualité de l’architecture et de la maintenabilité du code
 
 Objectif 2026 :
-- Maîtriser l’Intelligence Artificielle
+- Se focaliser sur l’Intelligence Artificielle
 - Comprendre et appliquer les domaines clés de l’IA
   (machine learning, IA appliquée, automatisation)
 - Créer des applications intégrant efficacement l’IA
@@ -91,6 +91,7 @@ CSS3 : 90%
 JavaScript : 75%
 React : 60%
 Node.js : 75%
+PHP : 70%
 TypeScript : 60%
 SQL : 85%
 Python : 60%
@@ -100,9 +101,9 @@ COMPÉTENCES PROFESSIONNELLES
 ====================
 Communication : 95%
 Travail d'équipe : 90%
-Gestion de projet : 85%
-Autonomie : 75%
-Résolution de problèmes : 80%
+Gestion de projet : 80%
+Autonomie : 90%
+Résolution de problèmes : 95%
 
 ====================
 OUTILS & TECHNOLOGIES
@@ -117,16 +118,15 @@ Frontend :
 Backend :
 - Node.js
 - Express
-- PHP
-- Python
-- Symfony
-- Java
-- Spring Boot
+- PHP: Symfony, CodeIgniter, Laravel
+- Java: Spring Boot
+- Python: FastAPI, Flask
 
 Bases de données :
 - PostgreSQL
 - MySQL
 - Oracle
+- SQLite
 
 Outils :
 - Git
@@ -156,6 +156,9 @@ L’application KOROBO permet de gérer efficacement la maintenance de sites
 photovoltaïques. Elle offre un suivi en temps réel des performances des installations,
 la planification d’interventions de maintenance préventive et corrective, ainsi que
 des rapports détaillés pour optimiser la gestion des actifs solaires.
+
+Actuellement en attente.
+
 Fonctionnalités clés :
 - Suivi en temps réel
 - Maintenance préventive et corrective
