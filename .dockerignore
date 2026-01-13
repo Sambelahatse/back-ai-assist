@@ -1,0 +1,38 @@
+# Environnements virtuels Python
+venv/
+.venv/
+env/
+
+# Cache Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+
+# Fichiers de configuration locale
+.env
+.env.local
+.env.*.local
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Fichiers de test
+test_*.py
+*_test.py
+
+# Dockerfile lui-même
+Dockerfile
+.dockerignore
+
+# Fichiers temporaires
+*.log
+*.tmp
