@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from openai import OpenAI
+# from openai import OpenAI
+import google.generativeai as genai
 from dotenv import load_dotenv
 import os
 import logging
@@ -10,11 +11,14 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-client = OpenAI(
-    # FROM .env file
-    api_key=os.getenv("GROQ_API_KEY"),
-    base_url="https://api.groq.com/openai/v1",
-)
+# client = OpenAI(
+#     # FROM .env file
+#     api_key=os.getenv("GROK_API_KEY"),
+#     # base_url="https://api.groq.com/openai/v1",
+#     base_url="https://api.x.ai/v1",
+# )
+
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 # 1️⃣ Contexte fixe (ton portfolio)
 CONTEXT = open("context.txt", "r").read()
@@ -25,32 +29,38 @@ conversation_history = []
 def ask_ai(question):
     global conversation_history
 
-    # Préparation des messages pour l'API Chat
-    messages = [{"role": "system", "content": CONTEXT}]
-    
-    # Ajout de l'historique existant
-    for entry in conversation_history:
-        messages.append(entry)
-    
-    # Ajout de la nouvelle question
-    messages.append({"role": "user", "content": question})
-
     try:
-        response = client.chat.completions.create(
-            model="openai/gpt-oss-20b",
-            messages=messages,
+        model = genai.GenerativeModel(
+            model_name="gemini-3-flash-preview"
         )
 
-        answer = response.choices[0].message.content
+        # Construction du prompt avec contexte + historique
+        prompt = CONTEXT + "\n\n"
 
-        # Mise à jour de l'historique
+        for msg in conversation_history:
+            role = "Utilisateur" if msg["role"] == "user" else "Assistant"
+            prompt += f"{role} : {msg['content']}\n"
+
+        prompt += f"Utilisateur : {question}"
+
+        response = model.generate_content(
+            prompt,
+            generation_config={
+                "temperature": 0.3,
+                "max_output_tokens": 1024
+            }
+        )
+
+        answer = response.text
+
         conversation_history.append({"role": "user", "content": question})
         conversation_history.append({"role": "assistant", "content": answer})
 
         return answer
-    except Exception as e:
-        return f"Désolé, une erreur est survenue : {str(e)}"
 
+    except Exception as e:
+        return f"Erreur Gemini : {str(e)}"
+        
 @app.route('/ask', methods=['POST'])
 def ask():
     # Récupération des données JSON envoyées par l'utilisateur
