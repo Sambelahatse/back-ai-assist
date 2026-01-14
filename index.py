@@ -1,56 +1,102 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+# from openai import OpenAI
 import google.generativeai as genai
+from dotenv import load_dotenv
 import os
+import logging
+
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
 
+# client = OpenAI(
+#     # FROM .env file
+#     api_key=os.getenv("GROK_API_KEY"),
+#     # base_url="https://api.groq.com/openai/v1",
+#     base_url="https://api.x.ai/v1",
+# )
+
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
+# 1️⃣ Contexte fixe (ton portfolio)
 CONTEXT = open("context.txt", "r").read()
+
+# 2️⃣ Historique mémoire (liste de dictionnaires pour le format ChatCompletion)
 conversation_history = []
 
 def ask_ai(question):
     global conversation_history
 
-    model = genai.GenerativeModel("gemini-3-flash-preview")
+    try:
+        model = genai.GenerativeModel(
+            model_name="gemini-3-flash-preview"
+        )
 
-    prompt = CONTEXT + "\n\n"
-    for msg in conversation_history:
-        role = "Utilisateur" if msg["role"] == "user" else "Assistant"
-        prompt += f"{role} : {msg['content']}\n"
+        # Construction du prompt avec contexte + historique
+        prompt = CONTEXT + "\n\n"
 
-    prompt += f"Utilisateur : {question}"
+        for msg in conversation_history:
+            role = "Utilisateur" if msg["role"] == "user" else "Assistant"
+            prompt += f"{role} : {msg['content']}\n"
 
-    response = model.generate_content(
-        prompt,
-        generation_config={
-            "temperature": 0.3,
-            "max_output_tokens": 1024
-        }
-    )
+        prompt += f"Utilisateur : {question}"
 
-    answer = response.text
+        response = model.generate_content(
+            prompt,
+            generation_config={
+                "temperature": 0.3,
+                "max_output_tokens": 1024
+            }
+        )
 
-    conversation_history.append({"role": "user", "content": question})
-    conversation_history.append({"role": "assistant", "content": answer})
+        answer = response.text
 
-    return answer
+        conversation_history.append({"role": "user", "content": question})
+        conversation_history.append({"role": "assistant", "content": answer})
 
-@app.route("/ask", methods=["POST"])
+        return answer
+
+    except Exception as e:
+        return f"Erreur Gemini : {str(e)}"
+        
+@app.route('/ask', methods=['POST'])
 def ask():
+    # Récupération des données JSON envoyées par l'utilisateur
     data = request.json
-    if not data or "prompt" not in data:
-        return jsonify({"error": "prompt manquant"}), 400
+    
+    if not data or 'prompt' not in data:
+        return jsonify({
+            "status": "error",
+            "message": "Le champ 'prompt' est requis dans le corps de la requête JSON."
+        }), 400
 
+    prompt = data['prompt']
+    
+    # Appel de l'IA
+    response_text = ask_ai(prompt)
+    
     return jsonify({
-        "response": ask_ai(data["prompt"])
+        "status": "success",
+        "prompt": prompt,
+        "response": response_text
     })
 
-@app.route("/")
+@app.route('/', methods=['GET'])
 def home():
     return jsonify({
-        "status": "ok",
-        "message": "API Flask Hugging Face active"
+        "message": "API LLM Mara Sambelahatse est active.",
+        "usage": "Envoyez un POST sur /ask avec {\"prompt\": \"votre question\"}"
     })
+
+if __name__ == '__main__':
+    if (os.getenv("ENVIRONMENT") == "dev"):
+        # comment: port 5000
+        logging.info("🚀 Serveur Flask démarré sur http://localhost:5000")
+        app.run(host='0.0.0.0', port=5000, debug=True)
+    else:
+        # comment: port 80
+        logging.info("🚀 Serveur Flask démarré sur http://localhost:80")
+        app.run(host='0.0.0.0', port=80, debug=False)
+
