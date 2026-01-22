@@ -33,11 +33,11 @@ client = OpenAI(
 
 # 🔥 MODÈLES ACTUALISÉS (Janvier 2026)
 AVAILABLE_MODELS = {
-    # "primary": "llama-3.2-90b-text-preview",  # Nouveau modèle flagship
-    # "fast": "llama-3.2-11b-text-preview",     # Rapide et efficace
-    # "versatile": "llama-3.1-70b-versatile",   # Toujours disponible
+    "primary": "llama-3.2-90b-text-preview",  # Nouveau modèle flagship
+    "fast": "llama-3.2-11b-text-preview",     # Rapide et efficace
+    "versatile": "llama-3.1-70b-versatile",   # Toujours disponible
     "long_context": "llama-3.1-8b-instant",   # Pour contexte long
-    # "multilingual": "llama-3.1-8b-instant",   # Bon en plusieurs langues
+    "multilingual": "llama-3.1-8b-instant",   # Bon en plusieurs langues
     "fallback": "llama-3.1-8b-instant"        # Fallback garanti
 }
 
