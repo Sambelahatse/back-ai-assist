@@ -327,7 +327,7 @@ def health_check():
         test_response = client.chat.completions.create(
             model=AVAILABLE_MODELS["fallback"],
             messages=[{"role": "user", "content": "ping"}],
-            max_tokens=1
+            max_completion_tokens=1
         )
         groq_healthy = True
     except:
