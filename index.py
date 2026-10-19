@@ -128,7 +128,7 @@ def test_model_availability(model_name: str) -> bool:
         test_response = client.chat.completions.create(
             model=model_name,
             messages=[{"role": "user", "content": "Test"}],
-            max_tokens=1
+            max_completion_tokens=1
         )
         logger.info(f"Modèle {model_name} est disponible")
         return True
