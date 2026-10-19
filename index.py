@@ -25,20 +25,24 @@ CORS(app, resources={
     r"/*": {"origins": os.getenv("ALLOWED_ORIGINS", "*").split(",")}
 })
 
-# Initialisation du client OpenAI pour Groq
+# Initialisation du client OpenAI compatible avec l'API Groq.
+# Le contrôle de la clé est fait à l'appel pour que l'application puisse démarrer
+# et exposer /health même si la variable d'environnement est absente.
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "").strip()
 client = OpenAI(
-    api_key=os.getenv("GROQ_API_KEY"),
+    api_key=GROQ_API_KEY or "missing-groq-api-key",
     base_url="https://api.groq.com/openai/v1",
 )
 
-# 🔥 MODÈLES ACTUALISÉS (Janvier 2026)
+# Modèles Groq encore pris en charge (les anciens modèles Llama utilisés ici
+# ont été retirés). GPT-OSS 120B pour la qualité, 20B comme solution de repli.
 AVAILABLE_MODELS = {
-    "primary": "llama-3.2-90b-text-preview",  # Nouveau modèle flagship
-    "fast": "llama-3.2-11b-text-preview",     # Rapide et efficace
-    "versatile": "llama-3.1-70b-versatile",   # Toujours disponible
-    "long_context": "llama-3.1-8b-instant",   # Pour contexte long
-    "multilingual": "llama-3.1-8b-instant",   # Bon en plusieurs langues
-    "fallback": "llama-3.1-8b-instant"        # Fallback garanti
+    "primary": "openai/gpt-oss-120b",
+    "fast": "openai/gpt-oss-20b",
+    "versatile": "openai/gpt-oss-120b",
+    "long_context": "openai/gpt-oss-20b",
+    "multilingual": "openai/gpt-oss-120b",
+    "fallback": "openai/gpt-oss-20b"
 }
 
 # 1️⃣ Chargement du contexte avec gestion d'erreur
@@ -117,6 +121,9 @@ conversation_memory = ConversationMemory()
 # 3️⃣ Fonction pour tester la disponibilité des modèles
 def test_model_availability(model_name: str) -> bool:
     """Teste si un modèle est disponible"""
+    if not GROQ_API_KEY:
+        logger.error("Variable GROQ_API_KEY absente")
+        return False
     try:
         test_response = client.chat.completions.create(
             model=model_name,
@@ -132,7 +139,16 @@ def test_model_availability(model_name: str) -> bool:
 # 4️⃣ Fonction améliorée pour interagir avec l'IA
 def ask_ai(question: str, model_preference: str = None) -> Dict[str, any]:
     """Pose une question à l'IA avec gestion avancée des erreurs"""
-    
+    if not GROQ_API_KEY:
+        logger.error("Impossible d'appeler Groq : GROQ_API_KEY n'est pas configurée")
+        return {
+            "answer": "Le service IA n'est pas configuré : la clé GROQ_API_KEY est absente sur le serveur.",
+            "response_time": 0,
+            "tokens_used": 0,
+            "model_used": "none",
+            "success": False
+        }
+
     # Déterminer le modèle à utiliser
     if model_preference and model_preference in AVAILABLE_MODELS.values():
         selected_model = model_preference
@@ -169,9 +185,9 @@ def ask_ai(question: str, model_preference: str = None) -> Dict[str, any]:
             response = client.chat.completions.create(
                 model=model_attempt,
                 messages=messages,
-                temperature=0.7,
-                max_tokens=1000,  # Limite raisonnable pour Groq
-                top_p=0.9
+                # GPT-OSS utilise max_completion_tokens. On laisse les paramètres
+                # de sampling par défaut pour éviter les paramètres non supportés.
+                max_completion_tokens=1000
             )
             
             response_time = time.time() - start_time
@@ -265,17 +281,13 @@ def ask():
 @app.route('/models', methods=['GET'])
 def get_available_models():
     """Retourne la liste des modèles disponibles"""
-    # Tester la disponibilité des modèles
-    available = {}
-    for key, model in AVAILABLE_MODELS.items():
-        if test_model_availability(model):
-            available[key] = model
-    
+    # Ne pas lancer plusieurs requêtes payantes à Groq à chaque consultation.
+    # La vraie disponibilité est vérifiée lors de /health ou d'une question.
     return jsonify({
-        "status": "success",
-        "available_models": available,
+        "status": "success" if GROQ_API_KEY else "degraded",
+        "available_models": AVAILABLE_MODELS if GROQ_API_KEY else {},
         "recommended": AVAILABLE_MODELS["primary"],
-        "note": "Les modèles Llama 3 70b-8192 et 8b-8192 ont été retirés par Groq"
+        "note": "Les modèles sont configurés ; la clé GROQ_API_KEY doit être définie sur l'hébergeur."
     })
 
 @app.route('/memory', methods=['GET', 'DELETE'])
@@ -301,6 +313,16 @@ def health_check():
     """Endpoint de vérification de santé"""
     # Tester la connexion à Groq
     groq_healthy = False
+    if not GROQ_API_KEY:
+        return jsonify({
+            "status": "degraded",
+            "service": "Mara Sambelahatse AI API",
+            "timestamp": time.time(),
+            "groq_connection": False,
+            "error": "GROQ_API_KEY is not configured",
+            "memory_stats": conversation_memory.get_summary_statistics(),
+            "context_loaded": len(CONTEXT) > 0
+        }), 503
     try:
         test_response = client.chat.completions.create(
             model=AVAILABLE_MODELS["fallback"],
